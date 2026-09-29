@@ -1,11 +1,12 @@
-# ai-projects
-Hands on experience on AI
+# AI Projects
 
-# from src.proxy.openAiProxy import invoke_model
-uv run --env-file .env python -m src.main
+An experimental collection of AI applications and agent workflows. The repository currently includes a chat module, a web-research agent built with LangGraph, model integrations through Groq and Gemini, and a Streamlit chat interface.
 
-uv run --env-file .env python -m src.agents.chat.main
-uv run --env-file .env python -m src.agents.web_researcher.research_flow
 
+## Entry Point
+
+Run the Streamlit chat interface:
+
+```sh
 uv run --env-file .env streamlit run app.py
-
+```
