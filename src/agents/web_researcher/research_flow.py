@@ -1,7 +1,14 @@
 from langgraph.graph import StateGraph, START, END
 from typing import Any
 
-from src.agents.web_researcher.agents import planner, searcher, synthesizer, answer
+from src.agents.web_researcher.agents import (
+    MAX_REFLECTION_ITERATIONS,
+    answer,
+    planner,
+    reflect,
+    searcher,
+    synthesizer,
+)
 
 from src.agents.web_researcher.schema import ResearchState
 
@@ -13,6 +20,7 @@ my_flow = StateGraph(ResearchState)
 my_flow.add_node("planner", planner)
 my_flow.add_node("searcher", searcher)
 my_flow.add_node("synthesizer", synthesizer)
+my_flow.add_node("reflect", reflect)
 my_flow.add_node("answer", answer)
 
 my_flow.add_edge(START, "planner")
@@ -20,7 +28,18 @@ my_flow.add_edge(START, "planner")
 
 my_flow.add_edge("planner", "searcher")
 my_flow.add_edge("searcher", "synthesizer")
-my_flow.add_edge("synthesizer", "answer")
+my_flow.add_edge("synthesizer", "reflect")
+my_flow.add_conditional_edges(
+    "reflect",
+    lambda state: (
+        "answer"
+        if state.sufficient
+        or state.iteration >= MAX_REFLECTION_ITERATIONS
+        or not state.follow_up_queries
+        else "searcher"
+    ),
+    {"searcher": "searcher", "answer": "answer"},
+)
 my_flow.add_edge("answer", END)
 
 print("compiling graph")

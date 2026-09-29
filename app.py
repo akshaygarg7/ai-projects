@@ -1,7 +1,7 @@
 import streamlit as st
 
 from src.agents.chat.main import invoke as chat
-
+from src.agents.web_researcher.research_flow import invoke as web_researcher
 
 # 1. Page Configuration
 st.set_page_config(page_title="Multi-Module Chatbot", page_icon="💬", layout="wide")
@@ -18,6 +18,7 @@ st.sidebar.markdown("Select a module method to process your chat prompts.")
 # Map radio choices to your actual Python functions
 module_mapping = {
     "chat": chat,
+    "research": web_researcher,
 }
 
 selected_mode = st.sidebar.radio(

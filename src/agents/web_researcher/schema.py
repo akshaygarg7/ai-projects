@@ -9,6 +9,11 @@ class ResearchState(BaseModel):
     search_results: list = Field(default=None)
     sub_queries: list = Field(default=None)
     findings_formatted: list = Field(default=None)
+    iteration: int = 0
+    sufficient: bool = False
+    gaps: list[str] = Field(default_factory=list)
+    contradictions: list[str] = Field(default_factory=list)
+    follow_up_queries: list[str] = Field(default_factory=list)
     answer: str = Field(default=None)
     answer_source: str = Field(default=None)
 
