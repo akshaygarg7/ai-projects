@@ -1,10 +1,10 @@
 
 from langchain.agents import create_agent
 
-from src.llm.groq_proxy import init_langchain_model
-from src.agents.web_researcher.schema import ResearchState, PlannerOutput, SynthesizeOutput, ReflectOutput, AnswerOutput
-from src.agents.web_researcher.prompts import PROMPT_PLAN, PROMPT_SYNTHESIZE, PROMPT_REFLECT, PROMPT_ANSWER
-from src.tools.search import search
+from src.common.llm.groq_proxy import init_langchain_model
+from src.web_researcher.schema import ResearchState, PlannerOutput, SynthesizeOutput, ReflectOutput, AnswerOutput
+from src.web_researcher.prompts import PROMPT_PLAN, PROMPT_SYNTHESIZE, PROMPT_REFLECT, PROMPT_ANSWER
+from src.common.tools.search import search
 
 MAX_REFLECTION_ITERATIONS = 2
 

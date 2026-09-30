@@ -1,7 +1,7 @@
 import streamlit as st
 
-from src.agents.chat.main import invoke as chat
-from src.agents.web_researcher.research_flow import invoke as web_researcher
+from src.chat.main import invoke as chat
+from src.web_researcher.research_flow import invoke as web_researcher
 
 # 1. Page Configuration
 st.set_page_config(page_title="Multi-Module Chatbot", page_icon="💬", layout="wide")
@@ -52,7 +52,10 @@ if user_prompt := st.chat_input("Type your message here..."):
     # Generate response using the selected method
     with st.chat_message("assistant"):
         with st.spinner(f"Running {selected_mode}..."):
-            response = active_method(user_prompt)
+            if selected_mode == "chat":
+                response = active_method(st.session_state.messages)
+            else:
+                response = active_method(user_prompt)
             st.markdown(response)
             
     # Save assistant response to history

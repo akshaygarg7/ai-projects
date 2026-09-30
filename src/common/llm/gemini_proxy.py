@@ -13,9 +13,17 @@ def init():
 
 def invoke_model(input):
     init()
+
+    if isinstance(input, list):
+        prompt = "\n".join(
+            f"{message['role']}: {message['content']}" for message in input
+        )
+    else:
+        prompt = input
+
     interaction = client.interactions.create(
         model="gemini-3.6-flash",
-        input=input
+        input=prompt
     )
 
     return interaction.output_text

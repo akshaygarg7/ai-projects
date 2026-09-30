@@ -32,13 +32,13 @@ TAVILY_API_KEY=your_tavily_api_key
 Run the web-researcher module with its built-in example question:
 
 ```sh
-uv run --env-file .env python -m src.agents.web_researcher.research_flow
+uv run --env-file .env python -m src.web_researcher.research_flow
 ```
 
 To ask a custom question from the command line:
 
 ```sh
-uv run --env-file .env python -c 'from src.agents.web_researcher.research_flow import invoke; invoke("What are the latest developments in battery recycling?")'
+uv run --env-file .env python -c 'from src.web_researcher.research_flow import invoke; invoke("What are the latest developments in battery recycling?")'
 ```
 
 
