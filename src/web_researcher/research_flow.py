@@ -1,3 +1,5 @@
+import argparse
+
 from langgraph.graph import StateGraph, START, END
 from collections.abc import Callable, Iterator
 from typing import Any
@@ -103,4 +105,6 @@ def stream(input: str, on_progress: Callable[[str], None] | None = None) -> Iter
 
 
 if __name__ == "__main__":
-    invoke("seasons in delhi")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("question", help="Research question")
+    invoke(parser.parse_args().question)

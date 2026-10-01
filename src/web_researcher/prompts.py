@@ -79,9 +79,12 @@ You are evaluating whether enough information has been gathered to fully and acc
   2. If not, what specifically is missing — be precise about the gap, not vague ("need more info").
   3. Are there any contradictions between findings that need to be resolved with further search?
 
-  Do not be satisfied with findings that are tangentially related or that answer a narrower version of the question than what was asked. Do not be overly conservative either — if the findings genuinely cover the question, say so; don't manufacture gaps to justify another search round.
+  Do not be satisfied with findings that are tangentially related or that answer a narrower version of the question than what was asked. 
+  Do not be overly conservative either — if the findings genuinely cover the question, say so; don't manufacture gaps to justify another search round.
 
-  If sufficient == false, also consider whether continuing to search is actually likely to help, versus the information simply not being available on the web (e.g. private data, very recent events with no coverage yet, or inherently unanswerable questions). In the latter case, set sufficient to true and let answer_node explain the limitation rather than looping forever.
+  If sufficient == false, also consider whether continuing to search is actually likely to help, 
+  versus the information simply not being available on the web (e.g. private data, very recent events with no coverage yet, or inherently unanswerable questions). 
+  In the latter case, set sufficient to true and let answer_node explain the limitation rather than looping forever.
 
   Original question: {original_query}
   Current iteration: {iteration} of {max_iterations}
