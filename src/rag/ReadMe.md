@@ -1,5 +1,5 @@
 
 
-<img src="RAG - Ingestion.jpg" />
+<img src="RAG - Ingestion.jpg" width="500" height="500" />
 
-<img src="RAG - Query.jpg" />
+<img src="RAG - Query.jpg" width="500" height="500" />
