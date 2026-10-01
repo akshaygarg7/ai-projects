@@ -1,6 +1,6 @@
 # AI Projects
 
-An experimental collection of AI applications and agent workflows. The repository currently includes a chat module, a web-research agent built with LangGraph, model integrations through Groq and Gemini, and a Streamlit chat interface.
+An experimental collection of AI applications and agent workflows. 
 
 ## Setup
 
@@ -26,11 +26,19 @@ The project requires Python 3.14 or newer and uses `uv` to manage Python and pro
 3. Create a `.env` file in the repository root with the API keys used by the app:
 
 	```dotenv
+	GEMINI_API_KEY = your_gemini_api_key
 	GROQ_API_KEY=your_groq_api_key
-	TAVILY_API_KEY=your_tavily_api_key
-	```
+	OPENAI_API_KEY = your_openai_api_key
+	MODEL_PROVIDER = "groq"
 
-	Groq is used by the chat and research workflows; Tavily is used for web research. If you switch the chat provider to Gemini, configure `GEMINI_API_KEY` instead. Do not commit `.env` or real API keys.
+	TAVILY_API_KEY=your_tavily_api_key
+
+	LANGSMITH_TRACING=true
+	LANGSMITH_ENDPOINT=
+	LANGSMITH_API_KEY=
+	LANGSMITH_PROJECT=my-first-agent
+
+	```
 
 ## Entry Point
 
