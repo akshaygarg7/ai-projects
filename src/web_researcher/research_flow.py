@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from collections.abc import Callable, Iterator
 from typing import Any
 
 from src.web_researcher.agents import (
@@ -14,6 +15,7 @@ from src.web_researcher.schema import ResearchState
 
 
 print("init graph")
+
 # builder = StateGraph(OverallState, input_schema=InputState, output_schema=OutputState)
 my_flow = StateGraph(ResearchState)
 
@@ -63,10 +65,12 @@ def invoke(input: str) -> Any:
     # compiled_graph.invoke(input, config, context, interrupt_before, interrupt_after)
     response = compiled_flow.invoke(graph_input)
     
-    print(f"graph response - {response}")
-    return response
+    print(f"graph response - {response["answer"]}")
+    print(f"graph response - {response["answer_source"]}")
 
-def stream(input:str) -> Any:
+    return response["answer"]
+
+def stream(input: str, on_progress: Callable[[str], None] | None = None) -> Iterator[str]:
 
     graph_input = { 
         "question": input,
@@ -79,28 +83,23 @@ def stream(input:str) -> Any:
     }
 
     print("invoking graph")
-    # compiled_graph.stream(input, stream_mode=["values", "updates", "messages", "custom"], version="v2")
-    for response in compiled_flow.stream(graph_input, stream_mode=["values", "updates", "messages", "custom"], version="v2"):
-        
-        # print(response)
-
-        if response["type"] == "values":
-            # ValuesStreamPart — full state snapshot after each step
-            print(f"State: topic={response['data']['question']}")
-        
-        elif response["type"] == "updates":
-            # UpdatesStreamPart — only the changed keys from each node
-            for node_name, state in response["data"].items():
-                print(f"Node `{node_name}` updated: {state}")
-        
-        elif response["type"] == "messages":
-            # MessagesStreamPart — (message_chunk, metadata) from LLM calls
-            msg, metadata = response["data"]
-            print(msg.content, end="", flush=True)
-        
-        elif response["type"] == "custom":
-            # CustomStreamPart — arbitrary data from get_stream_writer()
-            print(f"Progress: {response['data']['progress']}%")
+    progress_labels = {
+        "planner": "Planning research",
+        "searcher": "Searching the web",
+        "synthesizer": "Synthesizing findings",
+        "reflect": "Checking research coverage",
+        "answer": "Writing the answer",
+    }
+    for event in compiled_flow.stream(graph_input, stream_mode="updates"):
+        for node_name, state in event.items():
+            if on_progress is not None and node_name in progress_labels:
+                on_progress(progress_labels[node_name])
+            if node_name == "answer" and state.get("answer"):
+                answer_text = state["answer"]
+                source_url = state.get("answer_source")
+                if source_url:
+                    answer_text += f"\n\nSource: <{source_url}>"
+                yield answer_text
 
 
 if __name__ == "__main__":

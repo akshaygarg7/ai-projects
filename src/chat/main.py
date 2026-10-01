@@ -1,4 +1,4 @@
-from src.common.llm.model_strategy import get_model_strategy
+from src.common.llm.model_strategy import get_model
 
 
 def _normalize_messages(input_data):
@@ -28,7 +28,7 @@ def _normalize_messages(input_data):
     return normalized
 
 
-def invoke(input, history=None, provider=None):
+def chat(input, history=None, provider=None):
     if history is not None:
         messages = _normalize_messages(history)
         if isinstance(input, str):
@@ -42,9 +42,9 @@ def invoke(input, history=None, provider=None):
         return ""
 
     payload = [{"role": "system", "content": "You are a helpful AI assistant."}, *messages]
-    model = get_model_strategy(provider)
+    model = get_model(provider)
     return model.invoke(payload)
 
 
 if __name__ == "__main__":
-    invoke("hello")
+    chat("hello")
