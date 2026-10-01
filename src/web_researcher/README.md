@@ -6,8 +6,7 @@ Its shared state carries the question, search results, accumulated findings, ref
 
 
 ## HLD
-
-
+<img src="Agent Architecture - Frame 1.jpg" alt="Architecture" width="500" height="500">
 
 
 The workflow runs these steps:
