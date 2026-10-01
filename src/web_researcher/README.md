@@ -12,6 +12,32 @@ The workflow runs these steps:
 
 Reflection can route the workflow back to search. It stops when the findings are sufficient, there are no follow-up queries, or the two-search-round limit is reached.
 
+## Calling the Workflow
+
+Both functions accept a question string and run the compiled LangGraph workflow with that question in its state.
+
+### `invoke(question)`
+
+`invoke` runs the workflow synchronously with `compiled_flow.invoke()`. It waits for the full research run, prints the final answer and selected source URL, and returns only the answer text:
+
+```python
+from src.web_researcher.research_flow import invoke
+
+answer = invoke("What are the latest developments in battery recycling?")
+print(answer)
+```
+
+### `stream(question, on_progress=None)`
+
+`stream` is an iterator backed by `compiled_flow.stream(..., stream_mode="updates")`. As graph nodes finish, it calls the optional `on_progress` callback with labels such as `Searching the web` and `Synthesizing findings`. When the answer node finishes, it yields the completed answer with its source URL:
+
+```python
+from src.web_researcher.research_flow import stream
+
+for text in stream("What are the latest developments in battery recycling?", on_progress=print):
+	print(text, end="")
+```
+
 ## Run the Web Researcher
 
 Requirements: Python 3.14 or later, [uv](https://docs.astral.sh/uv/), and API keys for Groq and Tavily.

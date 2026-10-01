@@ -1,22 +1,23 @@
 
 from langchain.agents import create_agent
 
-from src.common.llm.groq_proxy import init_langchain_model
+from src.common.llm.model_strategy import get_model
 from src.web_researcher.schema import ResearchState, PlannerOutput, SynthesizeOutput, ReflectOutput, AnswerOutput
 from src.web_researcher.prompts import PROMPT_PLAN, PROMPT_SYNTHESIZE, PROMPT_REFLECT, PROMPT_ANSWER
 from src.common.tools.search import search
 
 MAX_REFLECTION_ITERATIONS = 2
 
+model = get_model().get_langchain_model()
+
 # node_function(state, config, runtime) -> state
 def planner(state, config, runtime) -> ResearchState:
     print(state.question)
     
     agent = create_agent(
-        model=init_langchain_model(),
+        model=model,
         system_prompt=PROMPT_PLAN,
-        response_format = PlannerOutput,
-        debug=False
+        response_format = PlannerOutput
     )
 
     input = {"messages": [{"role": "user", "content": state.question}]}
@@ -28,14 +29,15 @@ def planner(state, config, runtime) -> ResearchState:
     return { "sub_queries": node_response["structured_response"].sub_queries }
 
 def searcher(state, config, runtime) -> ResearchState:
+    print(f"searcher node - iteration {state.iteration}")
 
     queries = state.follow_up_queries or [state.question]
     search_results = []
     for query in queries:
-        search_results.extend(search(query)["results"])
+        result = search(query)["results"]
+        print(f" {len(result)} search results for query '{query}'")
+        search_results.extend(result)
 
-    # print(f"search node - {search_results["results"]}")
-    
     node_response = {
         "search_results": search_results,
         "iteration": state.iteration + 1,
@@ -52,7 +54,7 @@ def synthesizer(state, config, runtime):
     system_prompt = PROMPT_SYNTHESIZE.format(query=state.question, url=state.search_results[0]["url"], scraped_content=state.search_results[0]["content"])
 
     agent = create_agent(
-        model=init_langchain_model(),
+        model=model,
         system_prompt=system_prompt,
         response_format = SynthesizeOutput,
     )
@@ -66,10 +68,12 @@ def synthesizer(state, config, runtime):
             ]
         })
 
-    # print(node_response["structured_response"])
-
     findings = list(state.findings_formatted or [])
+
+    # Append the new findings to the existing list of findings
     findings.extend(node_response["structured_response"].findings)
+
+    print(f"{len(findings)} findings after synthesis")
     return { "findings_formatted": findings }
 
 def reflect(state, config, runtime) -> ResearchState:
@@ -85,7 +89,7 @@ def reflect(state, config, runtime) -> ResearchState:
         findings_formatted=findings,
     )
     agent = create_agent(
-        model=init_langchain_model(),
+        model=model,
         system_prompt=system_prompt,
         response_format=ReflectOutput,
     )
@@ -93,7 +97,9 @@ def reflect(state, config, runtime) -> ResearchState:
     node_response = agent.invoke({
         "messages": [{"role": "user", "content": "Evaluate the research findings."}]
     })
+
     result = node_response["structured_response"]
+    
     return {
         "sufficient": result.sufficient,
         "gaps": result.gaps,
@@ -105,7 +111,7 @@ def answer(state, config, runtime):
 
     system_prompt = PROMPT_ANSWER.format(original_query=state.question, findings_formatted_with_numbered_sources=state.findings_formatted)
     agent = create_agent(
-        model=init_langchain_model(),
+        model=model,
         system_prompt=system_prompt,
         response_format = AnswerOutput,
     )
